@@ -4,7 +4,7 @@ import java.util.Map;
 
 public class LexicAnalyzer {
 
-        public LexicAnalyzer(FileReader fileReader){
+    public LexicAnalyzer(FileReader fileReader) throws IOException {
             symbols = new HashMap<>();
             words = new HashMap<>();
             symbols.put('{', "LBRA");
@@ -16,105 +16,101 @@ public class LexicAnalyzer {
             symbols.put('+', "PLUS");
             symbols.put( '-', "MINUS");
             symbols.put('<', "LESS");
+        symbols.put('[', "SRLPAR");
+        symbols.put(']', "SRRPAR");
 
             words.put("if", "IF");
             words.put( "else" ,"ELSE");
             words.put( "do"   ,"DO");
             words.put( "while","WHILE");
+        words.put("int", "INT");
+        words.put("main", "MAIN");
             this.fileReader = fileReader;
+        curCh = getChar();
         }
 
+    public Map<Character, String> symbols;
+    public Map<String, String> words;
+    public final String EOF = "eof";
+    public final String NUM = "num";
+    public final String ID = "id";
+    private int curCh;
         private FileReader fileReader;
-        private Map<Character, String> symbols;
-        private Map<String, String> words;
-        private final String EOF = "eof";
-        private final String NUM = "num";
-        private final String ID = "id";
-        private final String SPACE = "space";
 
         public void analyze() throws Exception {
-//                int c = getChar();
-//                while (c!=-1) {
-//                    System.out.print((char) c);
-//                    c = getChar();
-//                }
-                nextToken();
+            String token = nextToken();
+            while (!token.equals(EOF)) {
+                System.out.println(token);
+                token = nextToken();
+            }
         }
 
     private int getChar() throws IOException {
-        int first = fileReader.read();
-        return first;
+        return fileReader.read();
     }
 
     @SuppressWarnings("unchecked")
-    public void nextToken() throws Exception {
-        String sym = " ";
+    public String nextToken() throws Exception {
+        String sym;
         Character ch;
-        int curIntCh = getChar();
         int value;
-        while (sym != null){
-            ch = (char) curIntCh;
+        while (true) {
+            ch = (char) curCh;
             if (ch=='\r' || ch =='\n'){
-                curIntCh = getChar();
-                ch = (char) curIntCh;
-                sym = "special char";
-                System.out.println(sym);
+                curCh = getChar();
                 continue;
             }
-            System.out.println("char get = "+ ch);
-            if (curIntCh==-1) {
+            if (curCh == -1) {
                 sym = EOF;
                 System.out.println("end of file");
-                break;
+                return sym;
             }
             else
             if (Character.isSpaceChar(ch)){
-                curIntCh = getChar();
-                ch = (char) curIntCh;
-                sym = SPACE;
+                curCh = getChar();
             }
             else
             if (symbols.keySet().contains(ch)){
                 sym = symbols.get(ch);
-                curIntCh = getChar();
-                ch = (char) curIntCh;
+                curCh = getChar();
+                return sym;
             }
             else
             if (Character.isDigit(ch)){
                 int val = 0;
                 while (Character.isDigit(ch)) {
-                    val = val * 10 + Character.getNumericValue(ch);//TODO проверить
-                    curIntCh = getChar();
-                    ch = (char) curIntCh;
+                    val = val * 10 + Character.getNumericValue(ch);
+                    curCh = getChar();
+                    ch = (char) curCh;
                 }
                 value = val;
                 sym = NUM +": "+value;
+                return sym;
             }
             else
             if (Character.isAlphabetic(ch)){
                 String ident = "";
                 while (Character.isAlphabetic(ch)){
                     ident = ident + String.valueOf(ch).toLowerCase();
-                    curIntCh = getChar();
-                    ch = (char) curIntCh;
+                    curCh = getChar();
+                    ch = (char) curCh;
                 }
                 if (words.keySet().contains(ident)){
                     sym = words.get(ident);
+                    return sym;
                 }
                 else
                 if (ident.length() == 1){
-                    sym = ID;
+                    sym = ID + ": " + ident;
+                    return sym;
                 }
                 else{
-                    sym = null;
-                    throw new Exception("Unknown identifier");
+                    throw new Exception("Unknown identifier: " + ident);
                 }
             }
             else {
-                sym = null;
                 throw new Exception("Unexpected symbol: "+ch);
             }
-            System.out.println(sym);
 
         }
     }
