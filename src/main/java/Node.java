@@ -9,8 +9,8 @@ public class Node {
     public  String kind = "";
     public  String value = "";
     public  String op1 = "";
-    public  String op2 = "";
-    public  String op3 = "";
+    public Node op2 = "";
+    public Node op3 = "";
 
     public Node(String kind, String value, String op1, String op2, String op3) {
         this.kind = kind;

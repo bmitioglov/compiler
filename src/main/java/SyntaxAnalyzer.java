@@ -13,6 +13,7 @@ public class SyntaxAnalyzer {
     public final String LT = "lt";
     public final String SET = "set";
     public final String IF = "if";
+    public final String ELSE = "else";
     public final String IF1 = "if";
     public final String IF2 = "if";
     public final String WHILE = "while";
@@ -39,11 +40,31 @@ public class SyntaxAnalyzer {
         return node;
 
     }
-    public void statement(String sym){
-
+    public Node statement(String sym) throws Exception {
         if (sym == IF ){
+        Node n = new Node(IF1);
+          sym = lexer.nextToken();
+        n.op1 = paren_expr();
+        n.op2 = statement(sym);
+            if(sym == ELSE) {
+                n.kind = IF2;
+                lexer.nextToken();
+                n.op3 = statement(sym);
+            }
+                else
+                if (sym == WHILE){
+                    n 
 
+                }
+
+
+
+        //  sym = lexer.nextToken();
+        return n;
         }
+    public void paren_expr(){
+
+    }
 //        if self.lexer.sym == Lexer.IF:
 //    n = Node(Parser.IF1)
 //    self.lexer.next_tok()
