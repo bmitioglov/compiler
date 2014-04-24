@@ -127,9 +127,8 @@ public class SyntaxAnalyzer {
         Node n = test(sym);
         if (n.kind == VAR && sym == EQUAL) {
             sym = lexer.nextToken();
-            Node node = new Node(SET, n, expr(sym));
+            n = new Node(SET, n, expr(sym));
         }
-
         return n;
     }
 
