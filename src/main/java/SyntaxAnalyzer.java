@@ -1,12 +1,14 @@
 /**
  * Created by Sanya on 22.04.2014.
  */
+
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
+
 public class SyntaxAnalyzer {
 
-        public final String VAR = "var";
+    public final String VAR = "var";
     public final String CONST = "const";
     public final String ADD = "add";
     public final String SUB = "sub";
@@ -17,55 +19,157 @@ public class SyntaxAnalyzer {
     public final String IF1 = "if";
     public final String IF2 = "if";
     public final String WHILE = "while";
+    public final String SEMICOLON = ";";
+    public final String LBRA = "{";
+    public final String RBRA = "}";
+    public final String LPAR = "(";
+    public final String RPAR = ")";
     public final String DO = "do";
     public final String EMPTY = "empty";
     public final String SEQ = "seq";
     public final String EXPR = "expr";
     public final String PROG = "prog";
+    public final String ID = "id";
+    public final String NUM = "num";
+    public final String EQUAL = "equal";
+    public final String PLUS = "+";
+    public final String MINUS = "-";
+    public final String LESS = "<";
+
 
     public LexicAnalyzer lexer;
 
     public SyntaxAnalyzer(LexicAnalyzer lexer) {
         this.lexer = lexer;
     }
-    public void term(){
-        if ();
+
+    public void term() {
+        if () ;
     }
+
     public Node parse() throws Exception {
         String sym = lexer.nextToken();
         Node node = new Node(PROG, statement(sym));
-        if (sym != lexer.EOF){
+        if (sym != lexer.EOF) {
             throw new Exception("Invalid statement syntax");
         }
         return node;
 
     }
+
     public Node statement(String sym) throws Exception {
-        if (sym == IF ){
-        Node n = new Node(IF1);
-          sym = lexer.nextToken();
-        n.op1 = paren_expr();
-        n.op2 = statement(sym);
-            if(sym == ELSE) {
+        if (sym == IF) {
+            Node n = new Node(IF1);
+            sym = lexer.nextToken();
+            n.op1 = paren_expr();
+            n.op2 = statement(sym);
+            if (sym == ELSE) {
                 n.kind = IF2;
                 lexer.nextToken();
                 n.op3 = statement(sym);
             }
-                else
-                if (sym == WHILE){
-                    n 
+        } else if (sym == WHILE) {
+            Node n = new Node(WHILE);
+            sym = lexer.nextToken();
+            n.op1 = paren_expr();
+            n.op2 = statement(sym);
+        }
+        else if (sym == DO) {
+            Node n = new Node(DO);
+            sym = lexer.nextToken();
+            n.op1 = statement(sym);
+            if (sym != WHILE) {
+                throw new Exception("\"while\" expected");
+            }
+            sym = lexer.nextToken();
+            n.op2 = paren_expr();
+            if (sym != SEMICOLON){
+                throw new Exception("\";\" expected");
+            }
 
-                }
-
+        }
+        else if (sym == SEMICOLON){
+            Node n = new Node(EMPTY);
+            sym = lexer.nextToken();
+        }
+        else if (sym == LBRA){
+            Node n = new Node(EMPTY);
+            sym = lexer.nextToken();
+            while (sym != LBRA){
+                Node n = new Node(SEQ, n, statement(sym));
+            }
+            sym = lexer.nextToken();
+        }
+        else {
+            Node n = new Node(EXPR, expr());
+            if (sym != SEMICOLON){
+                throw new Exception("\";\" expected");
+            }
+            sym = lexer.nextToken();
+        }
 
 
         //  sym = lexer.nextToken();
         return n;
-        }
-    public void paren_expr(){
-
     }
-//        if self.lexer.sym == Lexer.IF:
+
+    public Node paren_expr(String sym) throws  Exception {
+        if (sym != LPAR){
+            throw new Exception("\"(\" expected");
+        }
+        sym = lexer.nextToken();
+        Node n = expr(sym);
+        if (sym != RPAR){
+            throw new Exception("\")\" expected");
+        }
+        sym = lexer.nextToken();
+        return n;
+    }
+    public Node expr(String sym) throws Exception {
+        if(sym != ID){
+            return test(sym);
+        }
+        Node n = test(sym);
+        if (n.kind == VAR && sym == EQUAL){
+            sym = lexer.nextToken();
+             Node node = new Node(SET, n, expr(sym));
+        }
+
+        return n;
+    }
+    public Node test (String sym) throws Exception {
+        Node n = summa(sym);
+           if(sym == LESS){
+               sym = lexer.nextToken();
+               Node node = new Node(LT, n, summa(sym));
+        }
+
+        return n;
+    }
+    public Node summa (String sym) throws Exception {
+        Node n = term(sym);
+        while (sym == PLUS || sym == MINUS) {
+            if (sym == PLUS) n.kind = ADD;
+            else n.kind = SUB;
+            sym = lexer.nextToken();
+            Node node = new Node(LT, n, term(sym));
+        }
+        return n;
+    }
+    public Node term (String sym) throws Exception {
+        if(sym == ID){
+            Node n = new Node(VAR, value);
+            sym = lexer.nextToken();
+            return n;
+        }
+        else if (sym == NUM){
+            Node n = new Node(CONST, value);
+            return n;
+        }
+        else return paren_expr(sym);
+    }
+//        if self.lexer.sym == L
+// exer.IF:
 //    n = Node(Parser.IF1)
 //    self.lexer.next_tok()
 //    n.op1 = self.paren_expr()
@@ -104,7 +208,7 @@ public class SyntaxAnalyzer {
 //            self.error('";" expected')
 //            self.lexer.next_tok()
 //            return n
-    }
+}
 //    def error(self, msg):
 //    print 'Parser error:', msg
 //    sys.exit(1)

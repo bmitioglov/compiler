@@ -8,7 +8,7 @@ public class Node {
 
     public  String kind = "";
     public  String value = "";
-    public  String op1 = "";
+    public Node op1 = "";
     public Node op2 = "";
     public Node op3 = "";
 
@@ -19,4 +19,5 @@ public class Node {
         this.op2 = op2;
         this.op3 = op3;
     }
+
 }
