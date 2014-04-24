@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SyntaxAnalyzer {
-
+    public final String MAIN = "main";
     public final String VAR = "var";
     public final String CONST = "const";
     public final String ADD = "add";
@@ -56,7 +56,13 @@ public class SyntaxAnalyzer {
 
     public Node statement(String sym) throws Exception {
         Node n;
-        if (sym == IF) {
+        if (sym == MAIN){
+            n = new Node(MAIN);
+            sym = lexer.nextToken();
+            n.op1 = paren_expr(sym);
+            n.op2 = statement(sym);
+        }
+        else if (sym == IF) {
             n = new Node(IF1);
             sym = lexer.nextToken();
             n.op1 = paren_expr(sym);
@@ -90,7 +96,7 @@ public class SyntaxAnalyzer {
         } else if (sym == LBRA) {
             n = new Node(EMPTY);
             sym = lexer.nextToken();
-            while (sym != LBRA) {
+            while (sym != RBRA) {
                 n = new Node(SEQ, n, statement(sym));
             }
             sym = lexer.nextToken();
