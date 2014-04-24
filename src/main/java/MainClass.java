@@ -8,7 +8,9 @@ public class MainClass {
         try {
             fileReader = new FileReader("textfile.txt");
             LexicAnalyzer la = new LexicAnalyzer(fileReader);
-            la.analyze();
+            SyntaxAnalyzer sa = new SyntaxAnalyzer(la);
+//            la.analyze();
+            sa.parse();
         } catch (Exception e) {
             System.out.println("Exception was caughted: ");
             e.printStackTrace();
