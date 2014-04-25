@@ -1,12 +1,18 @@
+import entities.Constants;
+
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
+
 public class LexicalAnalyzer {
 
     public LexicalAnalyzer(FileReader fileReader) throws IOException {
+
         symbols = new HashMap<>();
         words = new HashMap<>();
+
+        //TODO: заменить значения (не ключи!) на константы из  Constants
         symbols.put('{', "LBRA");
         symbols.put('}', "RBRA");
         symbols.put('=', "EQUAL");
@@ -31,9 +37,6 @@ public class LexicalAnalyzer {
 
     public Map<Character, String> symbols;
     public Map<String, String> words;
-    public final String EOF = "eof";
-    public final String NUM = "num";
-    public final String ID = "id";
     private int curCh;
     public String sym;
     private FileReader fileReader;
@@ -54,7 +57,7 @@ public class LexicalAnalyzer {
                 continue;
             }
             if (curCh == -1) {
-                sym = EOF;
+                sym = Constants.EOF;
                 System.out.println("end of file");
                 return sym;
             }
@@ -77,7 +80,7 @@ public class LexicalAnalyzer {
                     ch = (char) curCh;
                 }
                 value = val;
-                sym = NUM +": "+value;
+                sym = Constants.NUM + ": " + value;
                 return sym;
             }
             else
@@ -94,7 +97,7 @@ public class LexicalAnalyzer {
                 }
                 else
                 if (ident.length() == 1){
-                    sym = ID + ": " + ident;
+                    sym = Constants.ID + ": " + ident;
                     return sym;
                 }
                 else{
