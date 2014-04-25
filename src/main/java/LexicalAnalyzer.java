@@ -2,32 +2,32 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LexicAnalyzer {
+public class LexicalAnalyzer {
 
-    public LexicAnalyzer(FileReader fileReader) throws IOException {
-            symbols = new HashMap<>();
-            words = new HashMap<>();
-            symbols.put('{', "LBRA");
-            symbols.put('}', "RBRA");
-            symbols.put('=', "EQUAL");
-            symbols.put(';', "SEMICOLON");
-            symbols.put('(', "LPAR");
-            symbols.put(')', "RPAR");
-            symbols.put('+', "PLUS");
-            symbols.put( '-', "MINUS");
-            symbols.put('<', "LESS");
+    public LexicalAnalyzer(FileReader fileReader) throws IOException {
+        symbols = new HashMap<>();
+        words = new HashMap<>();
+        symbols.put('{', "LBRA");
+        symbols.put('}', "RBRA");
+        symbols.put('=', "EQUAL");
+        symbols.put(';', "SEMICOLON");
+        symbols.put('(', "LPAR");
+        symbols.put(')', "RPAR");
+        symbols.put('+', "PLUS");
+        symbols.put('-', "MINUS");
+        symbols.put('<', "LESS");
         symbols.put('[', "SRLPAR");
         symbols.put(']', "SRRPAR");
 
-            words.put("if", "IF");
-            words.put( "else" ,"ELSE");
-            words.put( "do"   ,"DO");
-            words.put( "while","WHILE");
+        words.put("if", "IF");
+        words.put("else", "ELSE");
+        words.put("do", "DO");
+        words.put("while", "WHILE");
         words.put("int", "INT");
         words.put("main", "MAIN");
-            this.fileReader = fileReader;
+        this.fileReader = fileReader;
         curCh = getChar();
-        }
+    }
 
     public Map<Character, String> symbols;
     public Map<String, String> words;
@@ -35,15 +35,9 @@ public class LexicAnalyzer {
     public final String NUM = "num";
     public final String ID = "id";
     private int curCh;
-        private FileReader fileReader;
+    public String sym;
+    private FileReader fileReader;
 
-        public void analyze() throws Exception {
-            String token = nextToken();
-            while (!token.equals(EOF)) {
-                System.out.println(token);
-                token = nextToken();
-            }
-        }
 
     private int getChar() throws IOException {
         return fileReader.read();
@@ -51,7 +45,6 @@ public class LexicAnalyzer {
 
     @SuppressWarnings("unchecked")
     public String nextToken() throws Exception {
-        String sym;
         Character ch;
         int value;
         while (true) {

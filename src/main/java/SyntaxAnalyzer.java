@@ -1,12 +1,6 @@
-/**
- * Created by Sanya on 22.04.2014.
- */
-
-import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
 
 public class SyntaxAnalyzer {
+
     public final String MAIN = "main";
     public final String VAR = "var";
     public final String CONST = "const";
@@ -37,139 +31,142 @@ public class SyntaxAnalyzer {
     public final String LESS = "<";
 
 
-    public LexicAnalyzer lexer;
+    public LexicalAnalyzer lexer;
 
-    public SyntaxAnalyzer(LexicAnalyzer lexer) {
+    public SyntaxAnalyzer(LexicalAnalyzer lexer) {
         this.lexer = lexer;
     }
 
 
     public Node parse() throws Exception {
         String sym = lexer.nextToken();
-        Node node = new Node(PROG, statement(sym));
-        if (sym != lexer.EOF) {
+        Node node = new Node(PROG, statement());
+        if (!sym.equals(lexer.EOF)) {
             throw new Exception("Invalid statement syntax");
         }
         return node;
 
     }
 
-    public Node statement(String sym) throws Exception {
+    public Node statement() throws Exception {
         Node n;
-        if (sym == MAIN){
-            n = new Node(MAIN);
-            sym = lexer.nextToken();
-            n.op1 = paren_expr(sym);
-            n.op2 = statement(sym);
-        }
-        else if (sym == IF) {
-            n = new Node(IF1);
-            sym = lexer.nextToken();
-            n.op1 = paren_expr(sym);
-            n.op2 = statement(sym);
-            if (sym == ELSE) {
-                n.kind = IF2;
+        switch (lexer.sym) {
+            case MAIN:
+                n = new Node(MAIN);
                 lexer.nextToken();
-                n.op3 = statement(sym);
-            }
-        } else if (sym == WHILE) {
-            n = new Node(WHILE);
-            sym = lexer.nextToken();
-            n.op1 = paren_expr(sym);
-            n.op2 = statement(sym);
-        } else if (sym == DO) {
-            n = new Node(DO);
-            sym = lexer.nextToken();
-            n.op1 = statement(sym);
-            if (sym != WHILE) {
-                throw new Exception("\"while\" expected");
-            }
-            sym = lexer.nextToken();
-            n.op2 = paren_expr(sym);
-            if (sym != SEMICOLON) {
-                throw new Exception("\";\" expected");
-            }
+                n.op1 = paren_expr();
+                n.op2 = statement();
+                break;
+            case IF:
+                n = new Node(IF1);
+                lexer.nextToken();
+                n.op1 = paren_expr();
+                n.op2 = statement();
+                if (lexer.sym.equals(ELSE)) {
+                    n.kind = IF2;
+                    lexer.nextToken();
+                    n.op3 = statement();
+                }
+                break;
+            case WHILE:
+                n = new Node(WHILE);
+                lexer.nextToken();
+                n.op1 = paren_expr();
+                n.op2 = statement();
+                break;
+            case DO:
+                n = new Node(DO);
+                lexer.nextToken();
+                n.op1 = statement();
+                if (!lexer.sym.equals(WHILE)) {
+                    throw new Exception("\"while\" expected");
+                }
+                lexer.nextToken();
+                n.op2 = paren_expr();
+                if (!lexer.sym.equals(SEMICOLON)) {
+                    throw new Exception("\";\" expected");
+                }
 
-        } else if (sym == SEMICOLON) {
-            n = new Node(EMPTY);
-            sym = lexer.nextToken();
-        } else if (sym == LBRA) {
-            n = new Node(EMPTY);
-            sym = lexer.nextToken();
-            while (sym != RBRA) {
-                n = new Node(SEQ, n, statement(sym));
-            }
-            sym = lexer.nextToken();
-        } else {
-            n = new Node(EXPR, expr(sym));
-            if (sym != SEMICOLON) {
-                throw new Exception("\";\" expected");
-            }
-            sym = lexer.nextToken();
+                break;
+            case SEMICOLON:
+                n = new Node(EMPTY);
+                lexer.nextToken();
+                break;
+            case LBRA:
+                n = new Node(EMPTY);
+                lexer.nextToken();
+                while (!lexer.sym.equals(RBRA)) {
+                    n = new Node(SEQ, n, statement());
+                }
+                lexer.nextToken();
+                break;
+            default:
+                n = new Node(EXPR, expr());
+                if (!lexer.sym.equals(SEMICOLON)) {
+                    throw new Exception("\";\" expected");
+                }
+                lexer.nextToken();
+                break;
         }
-
-
-        //  sym = lexer.nextToken();
         return n;
     }
 
-    public Node paren_expr(String sym) throws Exception {
-        if (sym != LPAR) {
+    public Node paren_expr() throws Exception {
+        if (!lexer.sym.equals(LPAR)) {
             throw new Exception("\"(\" expected");
         }
-        sym = lexer.nextToken();
-        Node n = expr(sym);
-        if (sym != RPAR) {
+        lexer.nextToken();
+        Node n = expr();
+        if (!lexer.sym.equals(RPAR)) {
             throw new Exception("\")\" expected");
         }
-        sym = lexer.nextToken();
+        lexer.sym = lexer.nextToken();
         return n;
     }
 
-    public Node expr(String sym) throws Exception {
-        if (sym != ID) {
-            return test(sym);
+    public Node expr() throws Exception {
+        if (!lexer.sym.equals(ID)) {
+            return test();
         }
-        Node n = test(sym);
-        if (n.kind == VAR && sym == EQUAL) {
-            sym = lexer.nextToken();
-            n = new Node(SET, n, expr(sym));
+        Node n = test();
+        if (n.kind.equals(VAR) && lexer.sym.equals(EQUAL)) {
+            lexer.nextToken();
+            n = new Node(SET, n, expr());
         }
         return n;
     }
 
-    public Node test(String sym) throws Exception {
-        Node n = summa(sym);
-        if (sym == LESS) {
-            sym = lexer.nextToken();
-            Node node = new Node(LT, n, summa(sym));
+    public Node test() throws Exception {
+        Node n = sum();
+        if (lexer.sym.equals(LESS)) {
+            lexer.nextToken();
+            n = new Node(LT, n, sum());
         }
 
         return n;
     }
 
-    public Node summa(String sym) throws Exception {
-        Node n = term(sym);
-        while (sym == PLUS || sym == MINUS) {
-            if (sym == PLUS) n.kind = ADD;
+    public Node sum() throws Exception {
+        Node n = term();
+        while (lexer.sym.equals(PLUS) || lexer.sym.equals(MINUS)) {
+            if (lexer.sym.equals(PLUS)) n.kind = ADD;
             else n.kind = SUB;
-            sym = lexer.nextToken();
-            Node node = new Node(LT, n, term(sym));
+            lexer.nextToken();
+            n = new Node(LT, n, term());
         }
         return n;
     }
 
-    public Node term(String sym) throws Exception {
-        if (sym.contains(ID)) {
-            String value = getIdValue(sym);
+    public Node term() throws Exception {
+        if (lexer.sym.contains(ID)) {
+            String value = getIdValue(lexer.sym);
             Node n = new Node(VAR, value);
-            sym = lexer.nextToken();
+            lexer.nextToken();
             return n;
-        } else if (sym.contains(NUM)) {
-            String value = getNumValue(sym);
-            Node n = new Node(CONST, value);
-            return n;
-        } else return paren_expr(sym);
+        } else if (lexer.sym.contains(NUM)) {
+            String value = getNumValue(lexer.sym);
+            return new Node(CONST, value);
+        } else return paren_expr();
     }
 
     private String getIdValue(String ident) {

@@ -1,4 +1,3 @@
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -7,7 +6,7 @@ public class MainClass {
         FileReader fileReader = null;
         try {
             fileReader = new FileReader("textfile.txt");
-            LexicAnalyzer la = new LexicAnalyzer(fileReader);
+            LexicalAnalyzer la = new LexicalAnalyzer(fileReader);
             SyntaxAnalyzer sa = new SyntaxAnalyzer(la);
 //            la.analyze();
             sa.parse();
