@@ -14,7 +14,7 @@ public class SyntaxAnalyzer {
         lexer.nextToken();
         if (!lexer.sym.equals(Constants.MAIN))
             throw new Exception("Wrong program start with token = " + lexer.sym + ". Should start with 'main'.");
-        System.out.println("sym = " + lexer.sym);
+        System.out.println("sym in parse = " + lexer.sym);
         lexer.nextToken();
         Node node = new Node(Constants.PROG, statement());
         if (!lexer.sym.equals(Constants.EOF)) {
@@ -26,13 +26,8 @@ public class SyntaxAnalyzer {
 
     public Node statement() throws Exception {
         Node n;
+        System.out.println("sym statement start = " + lexer.sym);
         switch (lexer.sym) {
-            case Constants.MAIN:
-                n = new Node(Constants.MAIN);
-                lexer.nextToken();
-                n.op1 = paren_expr();
-                n.op2 = statement();
-                break;
             case Constants.IF:
                 n = new Node(Constants.IF1);
                 lexer.nextToken();
@@ -62,13 +57,13 @@ public class SyntaxAnalyzer {
                 if (!lexer.sym.equals(Constants.SEMICOLON)) {
                     throw new Exception("\";\" expected");
                 }
-
                 break;
             case Constants.SEMICOLON:
                 n = new Node(Constants.EMPTY);
                 lexer.nextToken();
                 break;
             case Constants.LBRA:
+                System.out.println("sym inside = " + lexer.sym);
                 n = new Node(Constants.EMPTY);
                 lexer.nextToken();
                 while (!lexer.sym.equals(Constants.RBRA)) {
