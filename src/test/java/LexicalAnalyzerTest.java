@@ -1,3 +1,4 @@
+import analyzers.LexicalAnalyzer;
 import entities.Constants;
 import org.junit.Test;
 

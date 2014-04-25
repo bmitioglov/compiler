@@ -1,3 +1,5 @@
+package analyzers;
+
 import entities.Constants;
 
 import java.io.*;

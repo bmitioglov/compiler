@@ -1,4 +1,7 @@
+package analyzers;
+
 import entities.Constants;
+import entities.Node;
 
 public class SyntaxAnalyzer {
 

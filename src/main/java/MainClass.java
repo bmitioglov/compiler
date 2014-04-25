@@ -1,3 +1,6 @@
+import analyzers.LexicalAnalyzer;
+import analyzers.SyntaxAnalyzer;
+
 import java.io.FileReader;
 import java.io.IOException;
 

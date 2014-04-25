@@ -1,9 +1,6 @@
-/**
- * Created by Sanya on 22.04.2014.
- */
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+package entities;
+
+
 public class Node {
 
     public  String kind = "";
