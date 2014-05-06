@@ -12,24 +12,38 @@ public class SyntaxAnalyzer {
         this.lexer = lexer;
     }
 
+    public void printTree(Node node){
+     // пробежаться по дереву и вывести
+        System.out.println("+-" + node.kind  +"(" + node.value + ")");
+
+        if(node.op1!=null ) {
+           // System.out.println("  "  + "(" + node.value + ")");
+            printTree(node.op1);}
+        if(node.op2!=null ) {
+            //System.out.println("  " + node.kind + "(" + node.value + ")");
+            printTree(node.op2);}
+        }
+
 
     public Node parse() throws Exception {
         lexer.nextToken();
         if (!lexer.sym.equals(Constants.MAIN))
             throw new Exception("Wrong program start with token = " + lexer.sym + ". Should start with 'main'.");
-        System.out.println("sym in parse = " + lexer.sym);
+        //System.out.println("sym in parse = " + lexer.sym);
         lexer.nextToken();
         Node node = new Node(Constants.PROG, statement());
+
         if (!lexer.sym.equals(Constants.EOF)) {
             throw new Exception("Invalid statement syntax");
         }
+        printTree(node);
         return node;
 
     }
 
     public Node statement() throws Exception {
         Node n;
-        System.out.println("sym statement start = " + lexer.sym);
+        //System.out.println("sym statement start = " + lexer.sym);
         switch (lexer.sym) {
             case Constants.IF:
                 n = new Node(Constants.IF1);
@@ -66,24 +80,26 @@ public class SyntaxAnalyzer {
                 lexer.nextToken();
                 break;
             case Constants.LBRA:
-                System.out.println("sym inside LBRA = " + lexer.sym);
+                //System.out.println("sym inside LBRA = " + lexer.sym);
                 n = new Node(Constants.EMPTY);
                 lexer.nextToken();
                 while (!lexer.sym.equals(Constants.RBRA)) {
-                    System.out.println("node = "+n);
+                    //System.out.println("node = "+n);
                     n = new Node(Constants.SEQ, n, statement());
+                   // System.out.println("Last token = " + lexer.sym);
                 }
                 lexer.nextToken();
                 break;
             default:
-                System.out.println("sym in default = "+lexer.sym);
+                //System.out.println("sym in default = "+lexer.sym);
                 n = new Node(Constants.EXPR, expr());
-                System.out.println("in default = " + lexer.sym);
-                lexer.nextToken();
-                System.out.println("in default2 = "+lexer.sym);
+                //System.out.println("in default = " + lexer.sym);
+               // lexer.nextToken();
+                //System.out.println("in default2 = "+lexer.sym);
                 if (!lexer.sym.equals(Constants.SEMICOLON)) {
                     throw new Exception("\";\" expected");
                 }
+                lexer.nextToken();
                 break;
         }
         return n;
@@ -104,13 +120,13 @@ public class SyntaxAnalyzer {
 
     public Node expr() throws Exception {
         if (!lexer.sym.contains(Constants.ID)) {
-            System.out.println("in expr = "+lexer.sym);
+            //System.out.println("in expr = "+lexer.sym);
             return test();
         }
         Node n = test();
         if (n.kind.equals(Constants.VAR) && lexer.sym.equals(Constants.EQUAL)) {
             lexer.nextToken();
-            System.out.println("kind in if expr() = "+n.kind+" lexer sym = "+lexer.sym);
+            //System.out.println("kind in if expr() = " + n.kind + " lexer sym = " + lexer.sym);
             n = new Node(Constants.SET, n, expr());
         }
         return n;
@@ -127,7 +143,7 @@ public class SyntaxAnalyzer {
 
     public Node sum() throws Exception {
         Node n = term();
-        System.out.println("lexer.sym in sum after term = "+lexer.sym);
+        //System.out.println("lexer.sym in sum after term = "+lexer.sym);
         while (lexer.sym.equals(Constants.PLUS) || lexer.sym.equals(Constants.MINUS)) {
             if (lexer.sym.equals(Constants.PLUS)) n.kind = Constants.ADD;
             else n.kind = Constants.SUB;
@@ -138,15 +154,16 @@ public class SyntaxAnalyzer {
     }
 
     public Node term() throws Exception {
-        System.out.println("lexer.sym in term = "+lexer.sym);
+        //System.out.println("lexer.sym in term = "+lexer.sym);
         if (lexer.sym.contains(Constants.ID)) {
             String value = getIdValue(lexer.sym);
-            System.out.println("value = "+value);
+            //System.out.println("value = "+value);
             Node n = new Node(Constants.VAR, value);
             lexer.nextToken();
             return n;
         } else if (lexer.sym.contains(Constants.NUM)) {
             String value = getNumValue(lexer.sym);
+            lexer.nextToken();
             return new Node(Constants.CONST, value);
         } else return paren_expr();
     }

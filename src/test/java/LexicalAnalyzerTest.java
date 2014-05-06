@@ -6,7 +6,7 @@ import java.io.FileReader;
 
 public class LexicalAnalyzerTest {
 
-    @Test
+   @Test
     public void lexicalAnalyze() throws Exception {
         FileReader fileReader;
         fileReader = new FileReader("textfile.txt");
