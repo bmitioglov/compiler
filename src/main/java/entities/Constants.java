@@ -15,7 +15,7 @@ public class Constants {
     public final static String IF1 = "IF";
     public final static String IF2 = "IF";
     public final static String WHILE = "WHILE";
-    public final static String SEMICOLON = ";";
+    public final static String SEMICOLON = "SEMICOLON";
     public final static String LBRA = "LBRA";
     public final static String RBRA = "RBRA";
     public final static String LPAR = "LPAR";
@@ -27,7 +27,7 @@ public class Constants {
     public final static String PROG = "PROG";
     public final static String ID = "ID";
     public final static String NUM = "NUM";
-    public final static String EQUAL = "equal";
+    public final static String EQUAL = "EQUAL";
     public final static String PLUS = "PLUS";
     public final static String MINUS = "MINUS";
     public final static String LESS = "LESS";
