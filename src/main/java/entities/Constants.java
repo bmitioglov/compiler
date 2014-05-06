@@ -32,4 +32,6 @@ public class Constants {
     public final static String MINUS = "MINUS";
     public final static String LESS = "LESS";
     public final static String EOF = "EOF";
+    public final static String INT = "INT";
+
 }
