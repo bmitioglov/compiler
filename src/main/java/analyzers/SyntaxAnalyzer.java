@@ -1,5 +1,6 @@
 package analyzers;
 
+import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 import entities.Constants;
 import entities.Node;
 
@@ -93,9 +94,9 @@ public class SyntaxAnalyzer {
                 System.out.println("sym inside INT case");
                 n = new Node(Constants.INT);
                 lexer.nextToken();
+
                 n.op1 = statement();
-//                lexer.nextToken();
-                System.out.println("lexer.sym = "+lexer.sym);
+                System.out.println("lexer.sym in INT = "+lexer.sym);
                 break;
             default:
                 System.out.println("sym in default = "+lexer.sym);
@@ -125,6 +126,7 @@ public class SyntaxAnalyzer {
     }
 
     public Node expr() throws Exception {
+        System.out.println("in expr start sym = "+lexer.sym);
         if (!lexer.sym.contains(Constants.ID)) {
             System.out.println("in expr = "+lexer.sym);
             return test();
@@ -135,6 +137,13 @@ public class SyntaxAnalyzer {
             System.out.println("kind in if expr() = "+n.kind+" lexer sym = "+lexer.sym);
             n = new Node(Constants.SET, n, expr());
         }
+//        //TEST
+//        if (n.kind.equals(Constants.VAR) && lexer.sym.equals(Constants.SRLPAR)) {
+//            lexer.nextToken();
+//            n = new Node(Constants.ARRAY, n, new Node(lexer.nextToken()));
+//            lexer.nextToken();
+//        }
+//        //TEST
         return n;
     }
 

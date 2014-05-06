@@ -33,5 +33,8 @@ public class Constants {
     public final static String LESS = "LESS";
     public final static String EOF = "EOF";
     public final static String INT = "INT";
+    public final static String SRRPAR = "SRLPAR";
+    public final static String SRLPAR = "SRLPAR";
+    public final static String ARRAY = "ARRAY";
 
 }

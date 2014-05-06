@@ -1,6 +1,6 @@
 
 main{
-int a = 0;
+int a[5];
 int b = a;
 if (a < 0) a = 5;
 }
