@@ -13,16 +13,14 @@ public class SyntaxAnalyzer {
         this.lexer = lexer;
     }
 
-    public void printTree(Node node){
+    public void printTree(Node node, String s){
      // пробежаться по дереву и вывести
-        System.out.println("+-" + node.kind  +"(" + node.value + ")");
+        System.out.println(s + node.kind  +"(" + node.value + ")");
 
         if(node.op1!=null ) {
-           // System.out.println("  "  + "(" + node.value + ")");
-            printTree(node.op1);}
+            printTree(node.op1, s+"|--");}
         if(node.op2!=null ) {
-            //System.out.println("  " + node.kind + "(" + node.value + ")");
-            printTree(node.op2);}
+            printTree(node.op2, s+"|--");}
         }
 
 
@@ -36,7 +34,7 @@ public class SyntaxAnalyzer {
         if (!lexer.sym.equals(Constants.EOF)) {
             throw new Exception("Invalid statement syntax");
         }
-        printTree(node);
+        printTree(node, "");
         return node;
 
     }
